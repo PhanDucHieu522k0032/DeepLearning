@@ -1,0 +1,103 @@
+Problem Objective:
+The assignment requires students to build a model that predicts sentiment labels (Positive, Negative, Neutral) from short texts (under 50 words) and their supplementary context (under 20 words). The model must implement a Transformer architecture with Attention mechanisms to process text and context separately before combining their representations.
+
+Problem Scope:
+Text inputs are short statements related to work or study
+Context inputs provide additional situational information
+Output is a sentiment classification
+Example provided:
+Text: "I went to work late today."
+Context: "The speaker just overslept."
+Output classification: "Negative"
+Environment Requirements:
+Python 3.8 or higher
+Required libraries include torch, pandas, numpy, nltk, scikit-learn, torchtext, and transformers
+Option to use a requirements.txt file for batch installation
+
+Data Source:
+Students can either collect data from social media platforms (such as X/Twitter)
+OR generate data using a language model with the prompt: "Generate 10 pairs of short text (<50 words) and context (<20 words) about emotions in work/study, with Positive/Negative/Neutral labels."
+Scale:
+Minimum 500 samples required
+Data should be stored in a file named sentiment_data.csv
+Sample Format:
+CSV format with three columns: text, context, label
+Examples provided:
+"I went to work late today.", "The speaker just overslept.", "Negative"
+"I just finished my project!", "Worked all week.", "Positive"
+Data Processing Instructions:
+Load data into a pandas DataFrame
+Preprocessing requirements:
+Convert text/context to lowercase
+Remove punctuation
+Truncate to maximum lengths (text=50 tokens, context=20 tokens)
+Tokenize text and build a vocabulary (limit to 5000 most common words)
+Use special tokens <PAD> and <UNK>
+Split data: 80% training, 20% testing with random shuffling
+Quality check: Remove empty rows and handle imbalanced labels through resampling or loss function weight adjustments
+
+Transformer with Attention Architecture:
+Input Layer:
+Convert text and context into word embeddings (e.g., 100-dimensional vectors)
+Form matrices of shape [sequence_length × embedding_dim]
+Optional: Use pretrained embeddings like GloVe or a pretrained Transformer model like DistilBERT
+Transformer Encoder:
+Process text and context separately using Transformer Encoder blocks
+Recommended configuration: 2 layers, 4 attention heads, hidden dimension of 128
+Each block includes:
+Multi-Head Self-Attention
+Feed-Forward Networks
+Layer Normalization
+Residual Connections
+Add Positional Encoding to capture word order
+Combination Method:
+Extract the final representation (e.g., [CLS] token embedding or average of token embeddings) from both text and context Transformer outputs
+Combine them using either:
+Simple concatenation or
+A Cross-Attention mechanism (attending context to text representations)
+Output Layer:
+Pass the combined representation through a dense (fully connected) layer
+Apply softmax activation to predict 3 classes (Positive, Negative, Neutral)
+
+Suggested Parameters:
+embedding_dim: 100 (or 768 if using pretrained Transformer embeddings like DistilBERT)
+hidden_dim: 128 (with option to reduce to 64 for efficiency)
+num_layers: 2 (with option to increase to 4 for richer representations if resources allow)
+num_heads: 4 (with note to ensure hidden_dim is divisible by num_heads)
+batch_size: 32 (with option to increase to 64 for larger datasets)
+epochs: 10 (with guidance to stop early if validation loss plateaus)
+dropout: 0.1-0.3 to prevent overfitting
+
+Experiments and Comparison Section
+Pretrained vs Scratch:
+Test embeddings pretrained on a large corpus (e.g., GloVe or DistilBERT)
+Compare against randomly initialized embeddings trained from scratch
+Cross-Attention vs Concatenation:
+Implement a Cross-Attention mechanism to combine text and context representations (where context attends to text)
+Compare this approach with simple concatenation of Transformer outputs
+Evaluation:
+Train models on the training set
+Evaluate performance on the test set using:
+Accuracy (overall correctness)
+F1-score (macro-averaged for imbalanced classes)
+
+Submission Requirements Section
+Explanation:
+Describe the problem, data collection/preprocessing, and the Transformer-based model
+Results:
+Present a table summarizing 4 experiments:
+Experiment	Accuracy	F1-score	Notes
+Pretrained + Concat	...	...	E.g., uses GloVe/DistilBERT
+Pretrained + Cross-Attn	...	...	E.g., context attends to text
+Scratch + Concat	...	...	E.g., random embeddings
+Scratch + Cross-Attn	...	...	E.g., custom attention
+Comments:
+Analyze results with interpretations such as:
+"Pretrained embeddings outperform scratch due to richer semantics"
+"Cross-Attention improves performance by focusing on relevant context"
+Evaluation Metrics:
+Calculate Accuracy and F1-score using scikit-learn
+Code Files:
+data.py: Data loading and preprocessing
+model.py: Transformer model definition
+train_eval.py: Training and evaluation
